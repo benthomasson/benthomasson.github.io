@@ -16,6 +16,12 @@ source .venv/bin/activate
 pip install ansible
 ```
 
+Then download the slack module:
+
+```bash
+wget https://raw.githubusercontent.com/ansible-collections/community.general/refs/heads/main/plugins/modules/slack.py
+```
+
 Each module is a small self contained program.  We can run these programs
 directly with the python interpreter.
 
