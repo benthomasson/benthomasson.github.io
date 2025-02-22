@@ -104,7 +104,7 @@ remote modules run the same way as local modules if the `ansible.module_utils`
 files are present in the working directory.
 
 To make this easier we can use the [zipapp](https://docs.python.org/3/library/zipapp.html) python package.
-Zipapps are executable zip files that a program with all their dependencies packaged in the zip file. We can
+Zipapps are executable zip files that contain a program with all their dependencies packaged in the zip file. We can
 use this to package up `ansible.module_utils` and a module together to ship to a remote host.
 
 First we need to create a directory with all the files that we need for the module including the module itself
