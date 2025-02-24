@@ -224,4 +224,4 @@ This brings up a few new questions:
 * How much time is spent building Ansiballz?
 * Can we build the Ansiballz/zipapps ahead of time or do we have to build them at runtime?
 
-I'll answer those questions in the [next post]()
+I'll answer those questions in a future post.
