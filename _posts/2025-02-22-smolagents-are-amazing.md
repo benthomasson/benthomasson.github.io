@@ -37,15 +37,14 @@ The LocalPythonInterpreter is a great start if you wanted to build a Python
 interpreter of your code. Here the code is parsed into a abstract syntax tree.
 
 ```python
-    expression = ast.parse(code)
+expression = ast.parse(code)
 ```
 
 After it is parsed into an expression it is recursively evaluated.  There are
 evaluate_<type> methods for each type of node in the AST.
 
 ```python
-            result = evaluate_ast(node, state, static_tools, custom_tools, authorized_imports)
-
+result = evaluate_ast(node, state, static_tools, custom_tools, authorized_imports)
 ```
 
 There is a `state` dictionary that is passed along with the evaluation of the
