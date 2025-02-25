@@ -1,0 +1,760 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>How does Ansible work? - Ben Thomasson</title>
+<meta name="description" content="Ansible is an automation tool that allows you to manage remote machines with modules.  How do these modules work?  Let’s take a look at the slack module as an example.">
+
+
+  <meta name="author" content="Ben Thomasson">
+  
+  <meta property="article:author" content="Ben Thomasson">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Ben Thomasson">
+<meta property="og:title" content="How does Ansible work?">
+<meta property="og:url" content="/ansible/code-review/how-does-ansible-work/">
+
+
+  <meta property="og:description" content="Ansible is an automation tool that allows you to manage remote machines with modules.  How do these modules work?  Let’s take a look at the slack module as an example.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-02-22T07:44:00-05:00">
+
+
+
+
+
+
+<link rel="canonical" href="/ansible/code-review/how-does-ansible-work/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Ben Thomasson Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single" dir="ltr">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Ben Thomasson
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/posts/"
+                
+                
+              >Posts</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/categories/"
+                
+                
+              >Categories</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/tags/"
+                
+                
+              >Tags</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/about/"
+                
+                
+              >About</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="/">
+        <img src="/assets/images/bio-photo.jpg" alt="Ben Thomasson" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="/" itemprop="url">Ben Thomasson</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://benthomasson.com" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">Website</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/benthomasson" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/benthomasson" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How does Ansible work?">
+    <meta itemprop="description" content="Ansible is an automation tool that allows you to manage remote machines withmodules.  How do these modules work?  Let’s take a look at theslack module as an example.">
+    <meta itemprop="datePublished" content="2025-02-22T07:44:00-05:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="/ansible/code-review/how-does-ansible-work/" itemprop="url">How does Ansible work?
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          3 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Ansible is an automation tool that allows you to manage remote machines with
+modules.  How do these modules work?  Let’s take a look at the
+slack module as an example.</p>
+
+<p>First we need ansible installed on our local machine:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python <span class="nt">-m</span> venv .venv
+<span class="nb">source</span> .venv/bin/activate
+pip <span class="nb">install </span>ansible
+</code></pre></div></div>
+
+<p>Then download the slack module:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://raw.githubusercontent.com/ansible-collections/community.general/refs/heads/main/plugins/modules/slack.py
+</code></pre></div></div>
+
+<p>Each module is a small self contained program.  We can run these programs
+directly with the python interpreter.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 slack.py
+</code></pre></div></div>
+
+<p>It hangs there waiting for input.  If we press control-D now we get an error:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="dl">"</span><span class="s2">msg</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Error: Module unable to decode stdin/parameters as valid JSON. Unable to parse what parameters were passed</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">failed</span><span class="dl">"</span><span class="p">:</span> <span class="kc">true</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>That’s a clue that it is waiting for JSON input.  Let’s give it a valid JSON input:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> python3 slack.py
+<span class="o">{}</span>
+^D
+</code></pre></div></div>
+
+<p>We get a new error message:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="dl">"</span><span class="s2">msg</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Error: Module unable to locate ANSIBLE_MODULE_ARGS in JSON data from stdin. Unable to figure out what parameters were passed</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">failed</span><span class="dl">"</span><span class="p">:</span> <span class="kc">true</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>It is looking for ANSIBLE_MODULE_ARGS in the JSON:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 slack.py 
+<span class="o">{</span><span class="s2">"ANSIBLE_MODULE_ARGS"</span>: <span class="o">{}}</span>
+
+^D
+</code></pre></div></div>
+
+<p>We finally get the arguments that it expects in the error message:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="dl">"</span><span class="s2">failed</span><span class="dl">"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="dl">"</span><span class="s2">msg</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">missing required arguments: token</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">invocation</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span><span class="dl">"</span><span class="s2">module_args</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span><span class="dl">"</span><span class="s2">username</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Ansible</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">icon_url</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://www.ansible.com/favicon.ico</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">link_names</span><span class="dl">"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="dl">"</span><span class="s2">validate_certs</span><span class="dl">"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="dl">"</span><span class="s2">color</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">normal</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">domain</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="dl">"</span><span class="s2">token</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="dl">"</span><span class="s2">msg</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="dl">"</span><span class="s2">channel</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="dl">"</span><span class="s2">thread_id</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="dl">"</span><span class="s2">icon_emoji</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="dl">"</span><span class="s2">parse</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="dl">"</span><span class="s2">attachments</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="dl">"</span><span class="s2">blocks</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="dl">"</span><span class="s2">message_id</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">}}}</span>
+</code></pre></div></div>
+
+<p>Running this output through <code class="language-plaintext highlighter-rouge">python -m json.tool</code> makes it more readable:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">failed</span><span class="dl">"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">msg</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">missing required arguments: token</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">invocation</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">module_args</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">username</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Ansible</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">icon_url</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://www.ansible.com/favicon.ico</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">link_names</span><span class="dl">"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">validate_certs</span><span class="dl">"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">color</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">normal</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">domain</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">token</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">msg</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">channel</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">thread_id</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">icon_emoji</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">parse</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">attachments</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">blocks</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">message_id</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This matches the documentation for the module here: <a href="https://docs.ansible.com/ansible/latest/modules/slack_module.html">https://docs.ansible.com/ansible/latest/modules/slack_module.html</a></p>
+
+<p>We need to provide the token argument at least.  Slack tokens are of the form <code class="language-plaintext highlighter-rouge">abc/xyz/123</code> so let’s provide that:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 slack.py
+<span class="o">{</span><span class="s2">"ANSIBLE_MODULE_ARGS"</span>: <span class="o">{</span><span class="s2">"token"</span>: <span class="s2">"abc/xyz/123"</span><span class="o">}}</span>
+^D
+
+<span class="o">{</span>
+    <span class="s2">"failed"</span>: <span class="nb">true</span>,
+    <span class="s2">"msg"</span>: <span class="s2">" failed to send {</span><span class="se">\"</span><span class="s2">username</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Ansible</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">icon_url</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">https://www.ansible.com/favicon.ico</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">link_names</span><span class="se">\"</span><span class="s2">: 1} to https://hooks.slack.com/services/[obscured]: HTTP Error 404: Not Found"</span>,
+    <span class="s2">"invocation"</span>: <span class="o">{</span>
+        <span class="s2">"module_args"</span>: <span class="o">{</span>
+            <span class="s2">"token"</span>: <span class="s2">"VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"</span>,
+            <span class="s2">"username"</span>: <span class="s2">"Ansible"</span>,
+            <span class="s2">"icon_url"</span>: <span class="s2">"https://www.ansible.com/favicon.ico"</span>,
+            <span class="s2">"link_names"</span>: 1,
+            <span class="s2">"validate_certs"</span>: <span class="nb">true</span>,
+            <span class="s2">"color"</span>: <span class="s2">"normal"</span>,
+            <span class="s2">"domain"</span>: null,
+            <span class="s2">"msg"</span>: null,
+            <span class="s2">"channel"</span>: null,
+            <span class="s2">"thread_id"</span>: null,
+            <span class="s2">"icon_emoji"</span>: null,
+            <span class="s2">"parse"</span>: null,
+            <span class="s2">"attachments"</span>: null,
+            <span class="s2">"blocks"</span>: null,
+            <span class="s2">"message_id"</span>: null
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>This error message shows that we are making some progress.  It is contacting slack and rejecting the token.   We can
+set up a real token using slack webhooks and try again.</p>
+
+<p>To set up an incoming slack webhook we need to create an app here <a href="https://api.slack.com/apps">https://api.slack.com/apps</a>.</p>
+
+<p><img src="/assets/images/create_new_app.png" alt="Create New App" /></p>
+
+<p>Set the app name:</p>
+
+<p><img src="/assets/images/app_name.png" alt="App name" /></p>
+
+<p>Then create in incoming webhook for that app here:</p>
+
+<p><img src="/assets/images/incoming_webhooks.png" alt="incoming webhooks" /></p>
+
+<p>Turn it on:</p>
+
+<p><img src="/assets/images/incoming_webhooks2.png" alt="incoming webhooks" /></p>
+
+<p>Give it permission:</p>
+
+<p><img src="/assets/images/permission.png" alt="webhooks permission" /></p>
+
+<p>Then we can get the token from the webhook URL and paste it into the JSON as I do here (with the token redacted of course):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 slack.py
+<span class="o">{</span><span class="s2">"ANSIBLE_MODULE_ARGS"</span>: <span class="o">{</span><span class="s2">"token"</span>: <span class="s2">"REDACTED"</span>, <span class="s2">"msg"</span>: <span class="s2">"hello ben"</span><span class="o">}}</span>
+^D
+</code></pre></div></div>
+
+<p>This returns:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">msg</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">OK</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">invocation</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">module_args</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">token</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">VALUE_SPECIFIED_IN_NO_LOG_PARAMETER</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">msg</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">hello ben</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">username</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Ansible</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">icon_url</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://www.ansible.com/favicon.ico</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">link_names</span><span class="dl">"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">validate_certs</span><span class="dl">"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">color</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">normal</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">domain</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">channel</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">thread_id</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">icon_emoji</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">parse</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">attachments</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">blocks</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">message_id</span><span class="dl">"</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Success!  We have sent a message with the slack module by itself.</p>
+
+<p><img src="/assets/images/hello_ben.png" alt="hello_ben" /></p>
+
+<p>We have learned that Ansible modules are programs that expect JSON input on the
+standard input and write JSON to the standard output.  If we look at the source
+code for the slack module
+<a href="https://github.com/ansible-collections/community.general/blob/main/plugins/modules/slack.py">here</a>
+we see that it is written in Python, but modules can be written in other
+languages as well as long as they conform to this JSON protocol.</p>
+
+<p>This leads to new questions:</p>
+
+<ul>
+  <li>How do modules work on a remote host?</li>
+  <li>Does the module need to run on the remote host or locally?</li>
+  <li>How do we get the module to the remote host?</li>
+  <li>Does python need to be installed there?</li>
+</ul>
+
+<p>In this <a href="/ansible/code-review/remote-ansible-modules/">next post</a> I will answer these questions.</p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#ansible" class="page__taxonomy-item p-category" rel="tag">ansible</a><span class="sep">, </span>
+    
+      <a href="/categories/#code-review" class="page__taxonomy-item p-category" rel="tag">code-review</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2025-02-22T07:44:00-05:00">February 22, 2025</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  <h4 class="page__share-title">Share on</h4>
+
+  <a href="https://twitter.com/intent/tweet?text=How+does+Ansible+work%3F%20%2Fansible%2Fcode-review%2Fhow-does-ansible-work%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2Fansible%2Fcode-review%2Fhow-does-ansible-work%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=/ansible/code-review/how-does-ansible-work/" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="#" class="pagination--pager disabled">Previous</a>
+    
+    
+      <a href="/ansible/code-review/remote-ansible-modules/" class="pagination--pager" title="Remote Ansible Modules">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You May Also Enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/smolagents/ai/agents/smolagents-are-amazing/" rel="permalink">Smolagents are amazing
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          2 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Smolagents is one of those projects
+that will change the industry. It was released at just the right time to build
+upon the recent open-source advances in re...</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ansible/code-review/remote-ansible-modules2/" rel="permalink">Remote Ansible Modules Continued
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          3 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">This post answers the question from the last post:
+
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ansible/code-review/remote-ansible-modules/" rel="permalink">Remote Ansible Modules
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          2 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">In this post I’ll answer the questions that arose from the last post:
+
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/benthomasson" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://github.com/benthomasson" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="">Ben Thomasson</a>. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/jekyll-themes/minimal-mistakes/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
