@@ -54,3 +54,8 @@ Faster-than-light is currently an experimental project and not meant for product
 The [run_module](https://github.com/benthomasson/faster-than-light/blob/adfa23403c3e5c304ac3d6d66af73d34ec3e1dd5/python-asyncio/faster_than_light/faster_than_light/module.py#L108) function is the main entry point for running automation modules.
 
 
+
+```mermaid
+flowchart TB
+    A & B--> C & D
+```
