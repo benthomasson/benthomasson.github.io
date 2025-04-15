@@ -163,20 +163,103 @@ call these easily:
     391     }
 
 
+Let's write a little Python script to call GetMetadata GRPC service:
+
+    #!/usr/bin/env python3
+
+    from subprocess import Popen, PIPE
+    import io
+
+    import grpc
+    import tfplugin6_pb2
+    import tfplugin6_pb2_grpc
+
+
+    def main():
+
+        env = {
+            "TF_PLUGIN_MAGIC_COOKIE": "d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2"
+        }
+
+        proc = Popen(
+            "./terraform-provider-hashicups",
+            stdout=PIPE,
+            stderr=PIPE,
+            shell=True,
+            env=env,
+        )
+
+        message_version = None
+        tf_proto_version = None
+        socket_type = None
+        socket_address = None
+        protocol = None
+
+        for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
+            line = line.rstrip("\n")
+            print(line)
+            data = line.split("|")
+            message_version = data[0]
+            tf_proto_version = int(data[1])
+            socket_type = data[2]
+            socket_address = data[3]
+            protocol = data[4]
+            break
+
+        print(message_version, tf_proto_version, socket_type, socket_address, protocol)
+
+        if message_version is None:
+            for line in io.TextIOWrapper(proc.stderr, encoding="utf-8"):
+                line = line.rstrip("\n")
+                print(line)
+
+        if tf_proto_version == 5:
+
+            raise Exception("Not supported in version 5")
+
+        elif tf_proto_version == 6:
+
+            with grpc.insecure_channel(f"{socket_type}://{socket_address}") as channel:
+                stub = tfplugin6_pb2_grpc.ProviderStub(channel)
+                response = stub.GetMetadata(tfplugin6_pb2.GetMetadata.Request())
+                print("received: " + str(response))
+
+        else:
+            raise Exception(f"Unsupported protocol version {tf_proto_version}")
+
+
+    if __name__ == "__main__":
+        main()
 
 
 
+If we put the hashicups terraform provider into the directory with this script and run it we get:
 
 
+    $ python get_metadata.py
+    1|6|unix|/tmp/plugin2003463635|grpc|
+    1 6 unix /tmp/plugin2003463635 grpc
+    received: server_capabilities {
+      plan_destroy: true
+      get_provider_schema_optional: true
+      move_resource_state: true
+    }
+    data_sources {
+      type_name: "hashicups_coffees"
+    }
+    resources {
+      type_name: "hashicups_order"
+    }
 
 
+Success!  We can retrieve some data from the provider.   We can see that it has
+data sources and resources and that it provides some capabilities.
+
+So we have learned that Terraform providers are self-contained programs that run as plugins
+to the main Terraform process.  They communicate with the main process over unix sockets
+using the GRPC protocol and protobuf messages to exchange data.
+
+In future posts we will explore the other services that providers have to better understand
+the Terraform provider lifecycle.
 
 
-
-* Outline
-
-[link](https://benthomasson.com)
-
-```python
-print('Hello world')
-```
