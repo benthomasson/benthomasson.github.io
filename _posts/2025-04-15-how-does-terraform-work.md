@@ -49,7 +49,7 @@ which Terraform providers use. Looking throught this code we see a hint in [go-p
     256         }
     257
 
-It is looking for a MagicCookieKey and MagicCookieValue. In [Terraform core](https://github.com/hashicorp/terraform/blob/8d2dffedb36a4cf34dc41828e24d1a2833c9c1f5/internal/plugin6/serve.go#L25) we can find the values
+It is looking for a `MagicCookieKey` and `MagicCookieValue`. In [Terraform core](https://github.com/hashicorp/terraform/blob/8d2dffedb36a4cf34dc41828e24d1a2833c9c1f5/internal/plugin6/serve.go#L25) we can find the values
 for these:
 
     26 var Handshake = plugin.HandshakeConfig{
@@ -73,10 +73,10 @@ Now if we set these as environment variables and run the provider again we get:
 This is a mix of stderr and stdout.  The first line is a log line sent to stderr.  The second line is a protocol descriptor
 sent to stdout.  This line communicates to the core how it should communicate with this plugin.  Here we have:
 
-* 1 - Probably a schema version for the message
-* 6 - The plugin protocol version
-* /var/folders/fn/w9s_vznd7qs71qz8rxv3mfb80000gn/T/plugin2463171971 - A unix socket
-* grpc - The remote procedure call protocol to use.  Here it is [grpc](https://grpc.io/).
+* `1` - Probably a schema version for the message
+* `6` - The plugin protocol version
+* `/var/folders/fn/w9s_vznd7qs71qz8rxv3mfb80000gn/T/plugin2463171971` - A unix socket
+* `grpc` - The remote procedure call protocol to use.  Here it is [grpc](https://grpc.io/).
 
 
 GRPC is a really nice RPC protocol with libraries for it in nearly every language. This means
@@ -113,7 +113,7 @@ for the 6th version of this schema which we can find [here](https://github.com/h
     //
 
 We can use this file to generate a client in Python to communicate with the hashicups provider using
-protoc.  Download this file and call it tfplugin6.proto. Run protoc on it like this:
+protoc.  Download this file and call it `tfplugin6.proto`. Run protoc on it like this:
 
     protoc tfplugin6.proto --python_out=.
 
@@ -121,7 +121,7 @@ protoc.  Download this file and call it tfplugin6.proto. Run protoc on it like t
 This produces a file name `tfplugin6_pb2.py` which will use in our Python client.
 
 
-If we look at the tfplugin6.proto protobuf schema file we can see a service section that lists
+If we look at the `tfplugin6.proto` protobuf schema file we can see a service section that lists
 all the RPC endpoints that we can connect to:
 
 
