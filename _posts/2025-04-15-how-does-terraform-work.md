@@ -64,6 +64,7 @@ for these:
 
 Now if we set these as environment variables and run the provider again we get:
 
+    $ export TF_PLUGIN_MAGIC_COOKIE=d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2
     $ ./terraform-provider-hashicups 
     {"@level":"debug","@message":"plugin address","@timestamp":"2025-04-15T05:34:18.840723-04:00","address":"/var/folders/fn/w9s_vznd7qs71qz8rxv3mfb80000gn/T/plugin2463171971","network":"unix"}
     1|6|unix|/var/folders/fn/w9s_vznd7qs71qz8rxv3mfb80000gn/T/plugin2463171971|grpc|
@@ -84,7 +85,83 @@ we can write a client in Python to explore how Terraform providers work in more 
 Now we know how they communicate, but what do they communicate?   GRPC uses protocol buffers
 which require that the endpoints agree on the schema of the binary communication in advance.
 This is not as easy as inspecting the JSON communication that Ansible modules use.  We will
-need to dive into the code a bit more to find the schema.
+need to dive into the code a bit more to find the schema.  Protocol buffers have a schema
+file that explain all the messages that can be sent between RPC peers.  We are looking
+for the 6th version of this schema which we can find [here](https://github.com/hashicorp/terraform/blob/c161997dbfc7a5eeca10c465c5e1f347ceaecbd0/docs/plugin-protocol/tfplugin6.9.proto)
+
+
+    // Copyright (c) HashiCorp, Inc.
+    // SPDX-License-Identifier: MPL-2.0
+
+    // Terraform Plugin RPC protocol version 6.9
+    //
+    // This file defines version 6.9 of the RPC protocol. To implement a plugin
+    // against this protocol, copy this definition into your own codebase and
+    // use protoc to generate stubs for your target language.
+    //
+    // This file will not be updated. Any minor versions of protocol 6 to follow
+    // should copy this file and modify the copy while maintaing backwards
+    // compatibility. Breaking changes, if any are required, will come
+    // in a subsequent major version with its own separate proto definition.
+    //
+    // Note that only the proto files included in a release tag of Terraform are
+    // official protocol releases. Proto files taken from other commits may include
+    // incomplete changes or features that did not make it into a final release.
+    // In all reasonable cases, plugin developers should take the proto file from
+    // the tag of the most recent release of Terraform, and not from the main
+    // branch or any other development branch.
+    //
+
+We can use this file to generate a client in Python to communicate with the hashicups provider using
+protoc.  Download this file and call it tfplugin6.proto. Run protoc on it like this:
+
+    protoc tfplugin6.proto --python_out=.
+
+
+This produces a file name `tfplugin6_pb2.py` which will use in our Python client.
+
+
+If we look at the tfplugin6.proto protobuf schema file we can see a service section that lists
+all the RPC endpoints that we can connect to:
+
+
+    327 service Provider {
+    328     //////// Information about what a provider supports/expects
+    329     
+    330     // GetMetadata returns upfront information about server capabilities and
+    331     // supported resource types without requiring the server to instantiate all
+    332     // schema information, which may be memory intensive. This RPC is optional,
+    333     // where clients may receive an unimplemented RPC error. Clients should
+    334     // ignore the error and call the GetProviderSchema RPC as a fallback.
+    335     rpc GetMetadata(GetMetadata.Request) returns (GetMetadata.Response);
+    336 
+    337     // GetSchema returns schema information for the provider, data resources,
+    338     // and managed resources.
+    339     rpc GetProviderSchema(GetProviderSchema.Request) returns (GetProviderSchema.Response);
+    340     rpc ValidateProviderConfig(ValidateProviderConfig.Request) returns (ValidateProviderConfig.Response);
+    341     rpc ValidateResourceConfig(ValidateResourceConfig.Request) returns (ValidateResourceConfig.Response);
+    342     rpc ValidateDataResourceConfig(ValidateDataResourceConfig.Request) returns (ValidateDataResourceConfig.Response);
+    343     rpc UpgradeResourceState(UpgradeResourceState.Request) returns (UpgradeResourceState.Response);
+
+
+If we dig into the message types we can see that some of the request messages do not take any arguments. So we can
+call these easily:
+
+
+    379 message GetMetadata {
+    380     message Request {
+    381     }
+    382 
+    383     message Response {
+    384         ServerCapabilities server_capabilities = 1;
+    385         repeated Diagnostic diagnostics = 2;
+    386         repeated DataSourceMetadata data_sources = 3;
+    387         repeated ResourceMetadata resources = 4;
+    388         // functions returns metadata for any functions.
+    389         repeated FunctionMetadata functions = 5;
+    390         repeated EphemeralMetadata ephemeral_resources = 6;
+    391     }
+
 
 
 
