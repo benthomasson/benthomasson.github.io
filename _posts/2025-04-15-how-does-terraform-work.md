@@ -163,7 +163,7 @@ call these easily:
     391     }
 
 
-Let's write a little Python script to call GetMetadata GRPC service:
+Let's write a little Python script to call `GetMetadata` GRPC service:
 
     #!/usr/bin/env python3
 
