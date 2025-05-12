@@ -4,6 +4,8 @@ date:   2025-02-22 07:44:00 -0500
 categories: ansible code-review
 ---
 
+[![asciicast](https://asciinema.org/a/SDYqCmMoAjtNe1YMoIgvGSDqo.svg)](https://asciinema.org/a/SDYqCmMoAjtNe1YMoIgvGSDqo)
+
 Ansible is an automation tool that allows you to manage remote machines with
 modules.  How do these modules work?  Let's take a look at the
 slack module as an example.
