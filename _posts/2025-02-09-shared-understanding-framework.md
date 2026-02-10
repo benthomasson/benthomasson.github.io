@@ -1,6 +1,6 @@
 ---
 title:  "Shared Understanding: When AI Becomes Your Research Partner"
-date:   2025-02-10 12:00:00 -0500
+date:   2025-02-09 12:00:00 -0500
 categories: ai collaboration knowledge-management
 ---
 
