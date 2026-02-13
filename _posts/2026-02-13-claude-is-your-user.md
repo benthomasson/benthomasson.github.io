@@ -6,7 +6,7 @@ categories: ai development ftl2
 
 What happens when the entire SDLC runs at conversation speed?
 
-For the past week, I've been building FTL2—a Python automation framework—with AI as the primary user. Not AI-assisted development. AI *is* the user. The one running the tools, hitting the errors, requesting the features, testing the code, and providing UX feedback.
+For the past week, I've been building [FTL2](https://github.com/benthomasson/ftl2)—a Python automation framework—with AI as the primary user. Not AI-assisted development. AI *is* the user. The one running the tools, hitting the errors, requesting the features, testing the code, and providing UX feedback.
 
 The results: 1,200+ lines of production code in a single day. Six bugs diagnosed and fixed in one debugging session. Performance benchmarks showing 14-17x speedup over Ansible. Multi-host scale tests running on real infrastructure.
 
@@ -45,7 +45,7 @@ None of these were in my original request. I asked about empty error messages. I
 
 ### Day 2: Performance Testing
 
-Created benchmarks comparing FTL2 to Ansible:
+Created [benchmarks](https://github.com/benthomasson/ftl2-performance) comparing FTL2 to Ansible:
 
 | Benchmark | Speedup |
 |-----------|---------|
