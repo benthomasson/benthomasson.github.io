@@ -18,19 +18,13 @@ There will be more instances of AI using software than human users. Every develo
 
 So I asked: what if we designed software for that reality?
 
-**Traditional SDLC:**
-```
-Build → Deploy → Wait for feedback → Prioritize → Build
-         ↑                                          ↓
-         └──────── weeks to months ────────────────┘
-```
+**Traditional SDLC** (weeks to months):
 
-**AI-as-user SDLC:**
-```
-Build → AI uses it → AI hits friction → AI articulates problem → Fix
-         ↑                                                          ↓
-         └───────────────── minutes ───────────────────────────────┘
-```
+![Traditional SDLC](/assets/images/traditional-sdlc.png)
+
+**AI-as-user SDLC** (minutes):
+
+![AI-as-user SDLC](/assets/images/ai-sdlc.png)
 
 The feedback loop collapses from weeks to minutes. The user is always present. The round-trip time for "what's wrong with this?" is seconds.
 
